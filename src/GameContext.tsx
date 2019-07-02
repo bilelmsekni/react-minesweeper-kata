@@ -24,7 +24,9 @@ const useStateGridCells = (initialValue: Grid): GridCustomHook => {
     return [
         grid,
         (index: number, action: CellAction) => {
-            const newGrid = grid.sendActionToCell(index, action);
+            const newGrid = grid
+                .sendActionToCell(index, action)
+                .tryRevealAdjacentCells(index, action);
             setGrid(newGrid);
         },
         setGrid,

@@ -58,14 +58,38 @@ export class Grid {
         return new Grid(this._column, cells);
     }
 
+    tryRevealAdjacentCells(cellIndex: number, action: CellAction): Grid {
+        if (action === 'dig') {
+            const cells = [...this._cells];
+            // use FloodLine Algorithm to detect candidates to clear, see link https://en.wikipedia.org/wiki/Flood_fill
+            // const candidates = this.poorFloodLineAlgorithm(cellIndex)
+            // Object.keys(candidates).every(key => cells[+key] = candidates[+key]['dig']())
+
+            return new Grid(this._column, cells);
+        }
+        return this;
+    }
+
+    // private poorFloodLineAlgorithm(cellIndex: number): { [key: number]: Cell } {
+    //     const result: { [key: number]: Cell } = {};
+    //     let cell = this._cells[cellIndex];
+    //     while (cellIndex < this._column || cell.canBeRevealed) {
+    //         result[cellIndex] = cell;
+    //         cellIndex++
+    //         cell = this._cells[cellIndex]
+    //     }
+    //     return result;
+    // }
+
     get column() {
         return this._column;
     }
 
     static updateAdjacentMinesCount(cells: Cell[], row: number, column: number): Cell[] {
         return cells.map((cell, i, arr) => {
-            const x = i % column;
-            const y = (i / row) >> 0;
+            const x = Grid.calculateX(i, column);
+            const y = Grid.calculateY(i, row);
+
             const isValidCoordinates = (ix: number, iy: number) => ix >= 0
                 && ix < column
                 && iy >= 0
@@ -75,7 +99,7 @@ export class Grid {
             for (let index = x - 1; index < x + 2; index++) {
                 for (let indey = y - 1; indey < y + 2; indey++) {
                     if (isValidCoordinates(index, indey)) {
-                        adjacentCells.push(arr[column * indey + index])
+                        adjacentCells.push(arr[Grid.coordinatesToIndex(index, indey, column)])
                     }
                 }
 
@@ -85,6 +109,14 @@ export class Grid {
                 .length;
             return cell;
         });
+    }
+
+    private static calculateX(index: number, column: number): number {
+        return index % column
+    }
+
+    private static calculateY(index: number, row: number): number {
+        return (index / row) >> 0
     }
 
     private static randomizeGrid(length: number, cells: Cell[]) {
@@ -105,5 +137,9 @@ export class Grid {
             cells.push(cell);
         }
         return cells;
+    }
+
+    private static coordinatesToIndex(x: number, y: number, column: number): number {
+        return (column * y) + x;
     }
 }

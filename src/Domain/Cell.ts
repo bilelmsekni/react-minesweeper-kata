@@ -36,6 +36,10 @@ export class Cell {
         return new Cell(this._bomb, false, true, this._adjacentMineCount);
     }
 
+    get canBeRevealed(): boolean {
+        return this._adjacentMineCount === 0;
+    }
+
     get hasBomb(): boolean {
         return this._bomb;
     }
