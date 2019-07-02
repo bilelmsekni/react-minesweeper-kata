@@ -3,6 +3,7 @@ import { CellStatus } from '../Domain/Cell';
 
 type CellProps = {
     cellIndex: number;
+    adjacentMinesCount: number;
     status: CellStatus;
     onclick: Function;
 };
@@ -48,6 +49,9 @@ export const Cell: React.FunctionComponent<CellProps> = props => {
             style={cellStyle(props.status, props.cellIndex)}
         >
             {emojis[props.status]}
+            {props.status === 'dug' && props.adjacentMinesCount > 0
+                ? props.adjacentMinesCount
+                : undefined}
         </div>
     );
 };

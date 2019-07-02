@@ -5,6 +5,7 @@ export class Cell {
     private _bomb: boolean;
     private _flagged: boolean;
     private _dug: boolean;
+    private _adjacentMineCount: number;
 
     static withBomb(): Cell {
         return new Cell(true, false, false);
@@ -14,10 +15,11 @@ export class Cell {
         return new Cell(false, false, false);
     }
 
-    constructor(withBomb: boolean, flagged: boolean, dug: boolean) {
+    constructor(withBomb: boolean, flagged: boolean, dug: boolean, adjacentMineCount: number = 0) {
         this._bomb = withBomb;
         this._flagged = flagged;
         this._dug = dug;
+        this._adjacentMineCount = adjacentMineCount;
     }
 
     flag(): Cell {
@@ -27,11 +29,23 @@ export class Cell {
         if (!this._bomb) {
             throw new Error(`Can't run around flaggin cells !`);
         }
-        return new Cell(this._bomb, !this._flagged, this._dug);
+        return new Cell(this._bomb, !this._flagged, this._dug, this._adjacentMineCount);
     }
 
     dig(): Cell {
-        return new Cell(this._bomb, false, true);
+        return new Cell(this._bomb, false, true, this._adjacentMineCount);
+    }
+
+    get hasBomb(): boolean {
+        return this._bomb;
+    }
+
+    get adjacentMinesCount(): number {
+        return this._adjacentMineCount;
+    }
+
+    set adjacentMinesCount(count: number) {
+        this._adjacentMineCount = count;
     }
 
     get detonated(): boolean {

@@ -9,20 +9,9 @@ export class Grid {
 
     static generate(row: number, column: number, minesCount: number): Grid {
         const length = row * column;
-        let cells: Cells = [];
-        for (let i = 0; i < length; i++) {
-            const cell = minesCount > i ? Cell.withBomb() : Cell.withoutBomb();
-            cells.push(cell);
-        }
-
-        let index = -1;
-        while (++index < length) {
-            const rand = index + Math.floor(Math.random() * (length - index));
-            const cell = cells[rand];
-
-            cells[rand] = cells[index];
-            cells[index] = cell;
-        }
+        let cells = Grid.fillGrid(length, minesCount);
+        cells = Grid.randomizeGrid(length, cells);
+        Grid.updateAdjacentMinesCount(cells, row, column);
 
         return new Grid(column, cells);
     }
@@ -71,5 +60,50 @@ export class Grid {
 
     get column() {
         return this._column;
+    }
+
+    static updateAdjacentMinesCount(cells: Cell[], row: number, column: number): Cell[] {
+        return cells.map((cell, i, arr) => {
+            const x = i % column;
+            const y = (i / row) >> 0;
+            const isValidCoordinates = (ix: number, iy: number) => ix >= 0
+                && ix < column
+                && iy >= 0
+                && iy < row
+                && (ix !== x || iy !== y);
+            let adjacentCells = [];
+            for (let index = x - 1; index < x + 2; index++) {
+                for (let indey = y - 1; indey < y + 2; indey++) {
+                    if (isValidCoordinates(index, indey)) {
+                        adjacentCells.push(arr[column * indey + index])
+                    }
+                }
+
+            }
+            cell.adjacentMinesCount = adjacentCells
+                .filter(cell => cell && cell.hasBomb)
+                .length;
+            return cell;
+        });
+    }
+
+    private static randomizeGrid(length: number, cells: Cell[]) {
+        let index = -1;
+        while (++index < length) {
+            const rand = index + Math.floor(Math.random() * (length - index));
+            const cell = cells[rand];
+            cells[rand] = cells[index];
+            cells[index] = cell;
+        }
+        return cells;
+    }
+
+    private static fillGrid(length: number, minesCount: number) {
+        let cells: Cells = [];
+        for (let i = 0; i < length; i++) {
+            const cell = minesCount > i ? Cell.withBomb() : Cell.withoutBomb();
+            cells.push(cell);
+        }
+        return cells;
     }
 }
