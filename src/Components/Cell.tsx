@@ -2,6 +2,7 @@ import React from 'react';
 import { CellStatus } from '../Domain/Cell';
 
 type CellProps = {
+    cellIndex: number;
     status: CellStatus;
     onclick: Function;
 };
@@ -13,7 +14,14 @@ const emojis = {
     detonated: '💥',
 };
 
-const cellStyle = (status: CellStatus): React.CSSProperties => ({
+const isCellLighter = (index: number) => {
+    const rowIndex = (index / 10) >> 0;
+    const cellIndex = index % 10;
+
+    return cellIndex % 2 ? !!(rowIndex % 2) : !!!(rowIndex % 2);
+};
+
+const cellStyle = (status: CellStatus, index: number): React.CSSProperties => ({
     width: '40px',
     height: '40px',
     textAlign: 'center',
@@ -21,8 +29,9 @@ const cellStyle = (status: CellStatus): React.CSSProperties => ({
     border: '1px solid black',
     boxSizing: 'border-box',
     cursor: 'pointer',
+    opacity: isCellLighter(index) ? 0.5 : 1,
     backgroundColor:
-        status === 'untouched' || status === 'flagged' ? '#ccc' : undefined,
+        status === 'untouched' || status === 'flagged' ? '#8cd53d' : '#e7b598',
 });
 
 export const Cell: React.FunctionComponent<CellProps> = props => {
@@ -36,7 +45,7 @@ export const Cell: React.FunctionComponent<CellProps> = props => {
                 ev.preventDefault();
                 props.onclick(ev);
             }}
-            style={cellStyle(props.status)}
+            style={cellStyle(props.status, props.cellIndex)}
         >
             {emojis[props.status]}
         </div>

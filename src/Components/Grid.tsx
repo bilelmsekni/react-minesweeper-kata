@@ -17,7 +17,17 @@ export const Grid: React.FunctionComponent = () => {
         false;
 
     return (
-        <React.Fragment>
+        <div
+            style={{
+                display: 'flex',
+                flexFlow: 'column wrap',
+                alignItems: 'center',
+                alignContent: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+            }}
+        >
             <Game gameOver={gameOver} />
             <div
                 style={{
@@ -31,6 +41,7 @@ export const Grid: React.FunctionComponent = () => {
                 {grid.map((cell, index) => (
                     <Cell
                         key={index}
+                        cellIndex={index}
                         status={cell.status}
                         onclick={(ev: MouseEvent) =>
                             handleClick(index, ev.button)
@@ -38,6 +49,6 @@ export const Grid: React.FunctionComponent = () => {
                     />
                 ))}
             </div>
-        </React.Fragment>
+        </div>
     );
 };
