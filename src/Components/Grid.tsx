@@ -5,10 +5,21 @@ import { Game } from './Game';
 import { isDefeated, isVictorious } from '../Domain/Rules';
 
 export const Grid: React.FunctionComponent = () => {
-    const { grid, updateGridCellStatus } = React.useContext(GameContext);
+    const {
+        grid,
+        previousGrid,
+        updateGridCellStatus,
+        revertLastAction,
+    } = React.useContext(GameContext);
 
     const handleClick = (index: number, button: number) => {
         updateGridCellStatus(index, button === 0 ? 'dig' : 'flag');
+    };
+
+    const revert = () => {
+        if (previousGrid) {
+            revertLastAction(previousGrid);
+        }
     };
 
     const gameOver =
@@ -16,8 +27,19 @@ export const Grid: React.FunctionComponent = () => {
         (isVictorious(grid) && 'victory') ||
         false;
 
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        let charCode = String.fromCharCode(event.which).toLowerCase();
+        if (event.ctrlKey && charCode === 'z') {
+            if (previousGrid) {
+                revertLastAction(previousGrid);
+            }
+        }
+    };
+
     return (
         <div
+            onKeyDown={(event: React.KeyboardEvent) => handleKeyDown(event)}
+            tabIndex={0}
             style={{
                 display: 'flex',
                 flexFlow: 'column wrap',
@@ -50,6 +72,7 @@ export const Grid: React.FunctionComponent = () => {
                     />
                 ))}
             </div>
+            <button onClick={() => revert()}>Revert</button>
         </div>
     );
 };
