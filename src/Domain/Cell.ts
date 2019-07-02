@@ -24,6 +24,9 @@ export class Cell {
         if (this._dug === true) {
             throw new Error('This cell has already been dug');
         }
+        if (!this._bomb) {
+            throw new Error(`Can't run around flaggin cells !`);
+        }
         return new Cell(this._bomb, !this._flagged, this._dug);
     }
 

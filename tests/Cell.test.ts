@@ -8,9 +8,8 @@ describe(Cell, () => {
             expect(cell.detonated).toBe(false);
         });
 
-        test('can be flagged and still not explose', () => {
-            cell.flag();
-            expect(cell.detonated).toBe(false);
+        test("can't be flagged if it doesn't have a bomb", () => {
+            expect(() => cell.flag()).toThrowError(`Can't run around flaggin cells !`);
         });
 
         test('does not explode even when you dig it (there is no bomb)', () => {
@@ -20,10 +19,7 @@ describe(Cell, () => {
 
         test("can't be flagged if it has been dug", () => {
             const dugCell = cell.dig();
-
-            expect(() => {
-                dugCell.flag();
-            }).toThrowError();
+            expect(() => dugCell.flag()).toThrowError('This cell has already been dug');
         });
     });
 
